@@ -56,8 +56,14 @@ app.use(function errorHandler(error, req, res, next) {
     res.status(500).json(response)
   })
 
-app.get('/',(req,res)=>{
-  res.send(Hello)
+app.get('/bookmarks/:bookId',(req,res)=>{
+  const {bookId}=req.params;
+  bookFound = books.filter(book=>book.id===bookId)
+  if(!bookFound){
+    res.status(404).json({error:"book not found"})
+  }
+  res.json(bookFound)
+
 })
 
 
@@ -86,4 +92,22 @@ app.post('/bookmarks',(req,res)=>{
   books.push({id,title,url,desc,rating})
   res.json(books)
 })
+
+app.delete('/bookmarks/:bookId',(req,res)=>{
+  const {bookId} = req.params;
+  const index = books.findIndex(book => book.id===bookId)
+  if(index===-1){
+    return res
+    .status(404)
+    .send("Book not found")
+  }
+  books.splice(index,1)
+  res.send('Deleted')
+})
+
+app.patch('/bookmarks/:bookId',(req,res)=>{
+  const {bookId} = req.params;
+  const {title,url,desc=null,rating=null}=req.body
+})
+
 module.exports = app
